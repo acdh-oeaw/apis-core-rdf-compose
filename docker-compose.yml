@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: apis-base-container/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+        restart: true
+
+        #volumes:
+        #- .apis_instance/:/app:cached
+
+    env_file:
+      - apis_settings.env
+    volumes:
+      - ${PWD}/apis_local_settings.py:/app/apis_local_settings.py
+      - ${PWD}/local_startup_scripts/060-createsuperuser:/startup/060-createsuperuser
+    # Overrides default command so things don't shut down after the process ends.
+    #command: sleep infinity
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+    #network_mode: service:db
+    ports:
+      - 5000:5000
+    # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_EXTENSIONS: pg_trgm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    # Add "forwardPorts": ["5432"] to **devcontainer.json** to forward PostgreSQL locally.
+    # (Adding the "ports" property to this file will not forward from a Codespace.)
+
+volumes:
+  postgres-data:
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+source /startup/common
+[[ $CREATE_SUPERUSER == "True" ]] && red django-admin createsuperuser --noinput

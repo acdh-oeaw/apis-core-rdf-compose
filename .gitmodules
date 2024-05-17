@@ -1,0 +1,6 @@
+[submodule "apis-base-container.git"]
+	path = apis-base-container
+	url = https://github.com/acdh-oeaw/apis-base-container.git
+[submodule "apis-instance-oebl-pnp.git"]
+	path = apis-instance-oebl-pnp
+	url = https://github.com/acdh-oeaw/apis-instance-oebl-pnp.git
